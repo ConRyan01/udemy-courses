@@ -1,5 +1,5 @@
 # udemy-courses
-This repo contains all of the work from courses I have taken from udemy
+This repo contains all of my work from courses I have taken from udemy
 
 ## Python Courses
 - ![The Python Bible: Everything You Need to Program In Python](https://www.udemy.com/course/the-python-bible) 
