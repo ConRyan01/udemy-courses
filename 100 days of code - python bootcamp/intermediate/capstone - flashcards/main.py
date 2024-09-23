@@ -38,7 +38,6 @@ except FileNotFoundError:
     df = pandas.read_csv('data/french_words.csv')
 
 words = df.to_dict(orient='records')
-print(words)
 
 window = Tk()
 window.config(bg=BACKGROUND_COLOR, pady=50, padx=50)
