@@ -8,34 +8,48 @@
 
 # 4. Send the letter generated in step 3 to that person's email address.
 
-import pandas, random, smtplib, datetime, os
+import pandas as pd
+import random
+import smtplib
+import datetime
+import os
 
-PATH = 'C:\\Users\\ryanc\\OneDrive - CCL Industries\\Documents\\GitHub\\udemy-courses\\100 days of code - python bootcamp\\intermediate+\\birthday_wisher\\letter_templates'
-MY_EMAIL = 'birthdaywisher2024@gmail.com'
+PATH = r'C:\Users\ryanc\OneDrive - CCL Industries\Documents\GitHub\udemy-courses\100 days of code - python bootcamp\intermediate+\birthday_wisher'
+MY_EMAIL = 'birthday.wisher2024@gmail.com'
+MY_PASSWORD = 'hgkz ucrb iozw toev'
 
-df = pandas.read_csv('birthdays.csv')
+df = pd.read_csv(os.path.join(PATH, 'birthdays.csv'))
 
 today = datetime.datetime.now()
 
-try:
-    matching_months = df[df['month'] == today.month]
-    matching_bdays = matching_months[matching_months['day'] == today.day]
-except:
-    print("No Birthdays Today")
+# Find birthdays matching today's month and day
+matching_bdays = df[(df['month'] == today.month) & (df['day'] == today.day)]
 
+# Get list of letter templates
 try:
-    files = [file for file in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, file))]
+    files = [file for file in os.listdir(os.path.join(PATH, 'letter_templates')) 
+             if os.path.isfile(os.path.join(PATH, 'letter_templates', file))]
 except:
     print("No Files in directory")
+    files = []
 
-for birthday in matching_bdays:
+# Send emails if there are matching birthdays and available templates
+for _, birthday in matching_bdays.iterrows():
     if files:
         random_letter = random.choice(files)
-
-    with open(PATH + "\\" + random_letter) as file:
-        content = file.read()
-        content.replace('[NAME]', birthday['name'])
-
-    with smtplib.SMTP("smtp.gmail.com") as connection:
-        connection.starttls()
-        connection.login()
+        
+        # Read the template file
+        with open(os.path.join(PATH, 'letter_templates', random_letter)) as file:
+            content = file.read()
+            content = content.replace('[NAME]', birthday['name'])
+        
+        # Set up the email server and send the email
+        with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+            connection.starttls()
+            connection.login(MY_EMAIL, MY_PASSWORD)
+            connection.sendmail(
+                from_addr=MY_EMAIL,
+                to_addrs=birthday['email'],
+                msg=f"Subject:Happy Birthday!\n\n{content}"
+            )
+            print(f"Sent birthday email to {birthday['name']}")
